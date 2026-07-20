@@ -1,0 +1,119 @@
+title = "Medical Sandbox - PHI and Secrets Detection"
+
+# Usage:
+#   gitleaks detect --source . --config .gitleaks.toml
+#   gitleaks protect --staged --config .gitleaks.toml   (as a pre-commit hook)
+
+[extend]
+useDefault = true # Retains gitleaks' standard AWS/GitHub/DB-token/private-key rules
+
+# ------------------------------------------------------------------
+# PHI rules - labeled/contextual patterns (HIPAA 18 identifiers)
+# All rules require a nearby label/keyword to keep false-positive rate low.
+# ------------------------------------------------------------------
+
+[[rules]]
+id = "phi-ssn-labeled"
+description = "Potential Social Security Number (PHI) with context detected"
+regex = '(?i)\b(ssn|social[-_ ]?security)[:\s=]*\d{3}-?\d{2}-?\d{4}\b'
+keywords = ["ssn", "social"]
+
+# OPTIONAL: catch raw, unlabeled SSNs in CSVs/JSONs.
+# Warning: may false-positive on phone numbers, hyphenated version strings, etc.
+# [[rules]]
+# id = "phi-ssn-raw"
+# description = "Raw Social Security Number pattern detected"
+# regex = '\b\d{3}-\d{2}-\d{4}\b'
+
+[[rules]]
+id = "phi-mrn"
+description = "Potential Medical Record Number / Patient ID detected"
+regex = '(?i)\b(mrn|patient[-_ ]?id|medical[-_ ]?record)[:\s=]+[a-zA-Z0-9-]{4,15}\b'
+keywords = ["mrn", "patient", "medical", "record"]
+
+[[rules]]
+id = "phi-dob"
+description = "Potential Date of Birth combined with PHI context"
+regex = '(?i)\b(dob|birthdate|date[-_ ]of[-_ ]birth)[:\s=]+(\d{1,2}[-/.\s]\d{1,2}[-/.\s]\d{2,4})\b'
+keywords = ["dob", "birthdate", "birth"]
+
+[[rules]]
+id = "phi-npi"
+description = "Potential National Provider Identifier (NPI) detected"
+regex = '(?i)\b(npi|provider[-_ ]?id)[:\s=]*\b[12]\d{9}\b'
+keywords = ["npi", "provider"]
+
+[[rules]]
+id = "phi-insurance-account"
+description = "Potential Health Plan Beneficiary / Insurance ID detected"
+regex = '(?i)\b(insurance[-_ ]?id|member[-_ ]?id|policy[-_ ]?num(ber)?|beneficiary)[:\s=]*[a-zA-Z0-9-]{4,20}\b'
+keywords = ["insurance", "member", "policy", "beneficiary"]
+
+[[rules]]
+id = "phi-medicare-mbi"
+description = "Potential Medicare Beneficiary Identifier (MBI) detected"
+# Official CMS MBI format by position: 1=N 2=A 3=AN 4=N 5=A 6=AN 7=N 8=A 9=A 10=N 11=N
+# Allowed letters exclude B,I,L,O,S,Z (visually ambiguous chars CMS disallows)
+regex = '(?i)\b(mbi|medicare)(\s+beneficiary)?(\s+(id|number))?[:\s=]*[1-9][ACDEFGHJKMNPQRTUVWXY][A-Z0-9][0-9][ACDEFGHJKMNPQRTUVWXY][A-Z0-9][0-9][ACDEFGHJKMNPQRTUVWXY]{2}[0-9]{2}\b'
+keywords = ["mbi", "medicare"]
+
+[[rules]]
+id = "phi-driver-license"
+description = "Potential Driver's License / State ID number detected"
+regex = '(?i)\b(driver.?s?[-_ ]?license|dl[-_ ]?(no|number|num)|state[-_ ]?id)[:\s=]+[a-zA-Z0-9-]{5,20}\b'
+keywords = ["license", "driver", "dl"]
+
+[[rules]]
+id = "phi-diagnosis-code"
+description = "Potential ICD-10 diagnosis code with PHI context detected"
+regex = '(?i)\b(diagnosis|icd-?10|dx[-_ ]?code)[:\s=]+[A-TV-Z][0-9][0-9AB](\.[0-9A-Z]{1,4})?\b'
+keywords = ["diagnosis", "icd", "icd-10", "dx"]
+
+[[rules]]
+id = "phi-patient-email"
+description = "Potential patient/PHI-context email address detected"
+regex = '(?i)\b(patient|client|member)[-_ ]?email[:\s=]+[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\b'
+keywords = ["patient", "email"]
+
+[[rules]]
+id = "phi-patient-phone"
+description = "Potential patient/PHI-context phone number detected"
+regex = '(?i)\b(patient|client)[-_ ]?(phone|cell|mobile|contact)[-_ ]?(number)?[:\s=]+\+?1?[-.\s]?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b'
+keywords = ["patient", "phone", "cell", "mobile"]
+
+[[rules]]
+id = "phi-patient-address"
+description = "Potential patient/PHI-context street address detected"
+regex = '(?i)\b(patient|client|member)[-_ ]?address[:\s=]+\d+\s+[A-Za-z0-9.\s,]{5,60}\b'
+keywords = ["patient", "address"]
+
+[[rules]]
+id = "phi-device-identifier"
+description = "Potential medical device serial/UDI identifier detected"
+regex = '(?i)\b(device[-_ ]?(id|serial)|udi)[:\s=]+[a-zA-Z0-9()-]{6,30}\b'
+keywords = ["device", "udi", "serial"]
+
+# ------------------------------------------------------------------
+# Allowlist - reduce false positives from synthetic/test/fixture data
+# ------------------------------------------------------------------
+
+[allowlist]
+description = "Ignore generated build output, dependencies, and synthetic test fixtures"
+paths = [
+  '''node_modules/''',
+  '''dist/''',
+  '''package-lock\.json''',
+  '''.*\.test\.(js|jsx|ts|tsx)$''',
+  '''.*\.spec\.(js|jsx|ts|tsx)$''',
+  '''(^|/)(__mocks__|fixtures|test-data|seed-data)/''',
+  '''\.gitleaks\.toml$''', # avoid self-matching on rule descriptions/comments
+]
+regexTarget = "match"
+regexes = [
+  '''000-00-0000''',        # common SSN placeholder
+  '''123-45-6789''',        # common SSN placeholder
+  '''XXX-XX-XXXX''',        # masked SSN placeholder
+  '''(?i)example\.(com|org)''', # placeholder domain
+  '''1234567893''',          # CMS published test/demo NPI (valid Luhn checksum)
+  '''1111111111''',          # common repeated-digit test NPI
+]

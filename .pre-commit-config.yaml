@@ -1,0 +1,12 @@
+# Portable across repos, provided each one also:
+#   - ships its own .gitleaks.toml at the repo root (this hook loads that file by name)
+#   - has the gitleaks binary on PATH (winget install Gitleaks.Gitleaks / brew install gitleaks / scoop install gitleaks)
+repos:
+  - repo: local
+    hooks:
+      - id: gitleaks-phi-scan
+        name: Gitleaks PHI/secrets scan
+        description: Blocks commits containing PHI or secrets, per .gitleaks.toml
+        language: system
+        entry: gitleaks protect --redact --staged --config=.gitleaks.toml
+        pass_filenames: false
