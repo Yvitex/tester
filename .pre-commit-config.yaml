@@ -8,5 +8,5 @@ repos:
         name: Gitleaks PHI/secrets scan
         description: Blocks commits containing PHI or secrets, per .gitleaks.toml
         language: system
-        entry: gitleaks protect --redact --staged --config=.gitleaks.toml
+        entry: gitleaks protect --staged --config=.gitleaks.toml -v
         pass_filenames: false

@@ -1,0 +1,11 @@
+{
+  "patients": [
+    {
+      "full_name": "Samantha Reyes",
+      "contact_email": "samantha.reyes@example.com",
+      "contact_phone": "312-644-2198",
+      "ssn": "123-45-6789",
+      "notes": "Patient Samantha Reyes reports improved symptoms after adjusting dosage. Reach at samantha.reyes@example.com or 312-644-2198."
+    }
+  ]
+}

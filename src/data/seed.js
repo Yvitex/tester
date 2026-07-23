@@ -2,7 +2,6 @@ export const seedPatients = [
   {
     id: 'p1',
     name: 'Maria Alvarez',
-    dob: '1978-04-12',
     sex: 'F',
     phone: '(555) 012-3344',
     allergies: 'Penicillin',
@@ -19,7 +18,6 @@ export const seedPatients = [
   {
     id: 'p2',
     name: 'Ravi Chen',
-    dob: '1991-09-30',
     sex: 'M',
     phone: '(555) 044-7789',
     allergies: 'None known',
@@ -35,7 +33,6 @@ export const seedPatients = [
   {
     id: 'p3',
     name: 'Estelle Dubois',
-    dob: '1955-01-22',
     sex: 'F',
     phone: '(555) 099-2210',
     allergies: 'Sulfa drugs',

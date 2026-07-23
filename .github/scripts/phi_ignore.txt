@@ -1,0 +1,14 @@
+# Extra allowlist for the Presidio PHI scan (.github/scripts/scan_phi.py).
+# Two kinds of entries, one per line:
+#
+#   path: <glob>     - skip an entire file (matched against the repo-relative
+#                       path with forward slashes, e.g. path: src/data/demo/**)
+#   regex: <pattern>  - skip any finding whose matched line matches this regex
+#                       (e.g. known placeholder names used in fixtures)
+#
+# Lines starting with # are comments. You can also silence a single line
+# inline by adding `# presidio:ignore` at the end of it.
+#
+# Examples:
+# path: src/data/synthetic/**
+# regex: Jane\s+Doe
