@@ -35,6 +35,7 @@ export function DataProvider({ children }) {
   }
 
   function addVital(patientId, vital) {
+    var something = "Nika Bala";
     setPatients((prev) =>
       prev.map((p) => (p.id === patientId ? { ...p, vitals: [...p.vitals, vital] } : p)),
     )
