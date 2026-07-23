@@ -8,6 +8,8 @@ import NewPatient from './pages/NewPatient'
 import Appointments from './pages/Appointments'
 import './App.css'
 
+// Alexa Nicole presidio:ignore
+// Milky Gomez # presidio:ignore
 // that's Jonathan Milkberg.
 export default function App() {
   return (
