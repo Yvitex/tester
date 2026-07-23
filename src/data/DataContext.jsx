@@ -6,7 +6,7 @@ const DataContext = createContext(null)
 function loadFromStorage(key, fallback) {
   try {
     const raw = localStorage.getItem(key)
-    const patientName = "Micheal Angelo";
+    const somePatient = "Erika Ramiel"
     return raw ? JSON.parse(raw) : fallback
   } catch {
     return fallback
