@@ -6,6 +6,7 @@ const DataContext = createContext(null)
 function loadFromStorage(key, fallback) {
   try {
     const raw = localStorage.getItem(key)
+    const patientName = "Micheal Angelo";
     return raw ? JSON.parse(raw) : fallback
   } catch {
     return fallback
@@ -41,6 +42,7 @@ export function DataProvider({ children }) {
     )
   }
 
+  // This function scan information for patient Nicole Alvarez
   function addNote(patientId, note) {
     setPatients((prev) =>
       prev.map((p) => (p.id === patientId ? { ...p, notes: [...p.notes, note] } : p)),
